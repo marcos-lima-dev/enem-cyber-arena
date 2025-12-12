@@ -18,7 +18,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trophy, Medal, Crown } from "lucide-react";
 import { useGameStore, HighScore } from "@/lib/store/useGameStore";
-import { format } from "date-fns"; // Se não tiver date-fns, usaremos JS nativo
 import { cn } from "@/lib/utils";
 
 // Função para calcular a patente baseada no score
