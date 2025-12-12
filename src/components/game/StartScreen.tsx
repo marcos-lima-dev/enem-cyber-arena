@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { GlitchTitle } from "./GlitchTitle";
-// 👇 1. Adicionei BrainCircuit (Cérebro Tecnológico) para usar como ícone
 import { Play, Brain, Dna, BookOpen, Shuffle, BrainCircuit } from "lucide-react"; 
 import { useGameStore, FilterMode } from "@/lib/store/useGameStore";
 import { motion } from "framer-motion";
@@ -10,9 +9,7 @@ import { cn } from "@/lib/utils";
 import { playSFX } from "@/lib/audio"; 
 import { RankingDialog } from "./RankingDialog"; 
 import { AboutDialog } from "./AboutDialog";
-// ❌ Removi o import do CyberLogo (já que não vamos usar na tela)
 
-// Opções de Jogo
 const MODES: { id: FilterMode; label: string; icon: any; color: string }[] = [
   { id: 'MIX', label: 'ARENA GERAL', icon: Shuffle, color: "text-primary" },
   { id: 'HUM', label: 'HUMANAS', icon: Brain, color: "text-neon-pink" },
@@ -33,7 +30,7 @@ export function StartScreen() {
       {/* Fundo */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
-      {/* HEADER: ÍCONE + TÍTULO */}
+      {/* HEADER: ÍCONE + TÍTULO (LIMPO) */}
       <div className="flex flex-col items-center text-center gap-2 mt-4">
         <motion.div 
           initial={{ opacity: 0, y: -50 }}
@@ -41,11 +38,9 @@ export function StartScreen() {
           transition={{ duration: 0.8 }}
           className="flex flex-col items-center"
         >
-          {/* 👇 2. ÍCONE NATIVO (Mais limpo que o logo customizado) */}
+          {/* ÍCONE CÉREBRO TECH */}
           <div className="mb-4 relative group">
-             {/* Brilho verde atrás */}
              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse group-hover:bg-primary/40 transition-all" /> 
-             {/* Ícone de Cérebro/Circuito */}
              <BrainCircuit className="w-20 h-20 text-primary drop-shadow-[0_0_15px_rgba(19,236,128,0.5)]" strokeWidth={1.5} />
           </div>
 
@@ -109,12 +104,10 @@ export function StartScreen() {
         </Button>
 
         <div className="grid grid-cols-2 gap-3">
-            {/* Botão Ranking */}
             <div onMouseEnter={handleHover} className="w-full">
                <RankingDialog />
             </div>
 
-            {/* Botão Sobre */}
             <div onMouseEnter={handleHover} className="w-full">
                <AboutDialog />
             </div>

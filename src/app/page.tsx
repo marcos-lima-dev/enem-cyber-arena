@@ -8,11 +8,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { 
   Bolt, History, AlertTriangle, RefreshCcw, Search, Trash2, 
   ArrowLeft, Brain, Dna, BookOpen, Shuffle 
-} from "lucide-react"; // Importei os ícones novos
+} from "lucide-react"; 
 import { cn } from "@/lib/utils";
 import { StartScreen } from "@/components/game/StartScreen";
 
-// Configuração Visual dos Modos (Para exibir no topo)
+// Configuração Visual dos Modos
 const MODE_INFO: Record<FilterMode, { label: string; icon: any; color: string }> = {
   'MIX': { label: 'ARENA GERAL', icon: Shuffle, color: 'text-primary' },
   'HUM': { label: 'HUMANAS', icon: Brain, color: 'text-neon-pink' },
@@ -29,8 +29,9 @@ export default function GameArena() {
     currentQuestion, 
     revealedLetters, 
     keyboard,
-    filterMode, // 👈 Pegamos o modo atual da Store
-    startGame, 
+    filterMode, 
+    startGame,
+    nextLevel, // 👈 IMPORTANTE: A função que mantém os pontos
     tickTimer, 
     submitGuess,
     useRevealPowerup, 
@@ -38,7 +39,7 @@ export default function GameArena() {
     resetGame 
   } = useGameStore();
 
-  // Relógio do Jogo
+  // Relógio
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (status === 'playing') {
@@ -57,7 +58,6 @@ export default function GameArena() {
   const isClutch = timeLeft < 10;
   const progressValue = (timeLeft / 60) * 100;
   
-  // Pega as infos visuais do modo atual
   const activeMode = MODE_INFO[filterMode];
   const ModeIcon = activeMode.icon;
 
@@ -72,12 +72,11 @@ export default function GameArena() {
         )} 
       />
 
-      {/* --- NOVO HEADER TÁTICO --- */}
+      {/* HEADER TÁTICO */}
       <header className="flex flex-col gap-2 mb-4 z-10 pt-2">
         
-        {/* Linha 1: Navegação e Modo */}
         <div className="flex items-center justify-between">
-            {/* Botão Voltar (Abortar) */}
+            {/* Voltar */}
             <Button 
                 variant="ghost" 
                 size="icon" 
@@ -87,7 +86,7 @@ export default function GameArena() {
                 <ArrowLeft className="h-6 w-6" />
             </Button>
 
-            {/* Indicador de Protocolo (Centralizado ou Direita) */}
+            {/* Protocolo */}
             <div className="flex items-center gap-2 bg-gray-900/80 border border-white/10 px-3 py-1 rounded-full">
                 <ModeIcon className={cn("h-4 w-4", activeMode.color)} />
                 <span className={cn("text-[10px] font-black tracking-widest text-gray-300")}>
@@ -95,13 +94,17 @@ export default function GameArena() {
                 </span>
             </div>
             
-            {/* Score (Movido para cá) */}
-             <div className="font-mono text-xs text-gray-400 bg-black/40 px-2 py-1 rounded">
-                PTS: <span className="text-white font-bold">{score}</span>
+            {/* 👇 SCORE CORRIGIDO E ESTILIZADO 👇 */}
+             <div className="font-mono text-xs text-gray-400 bg-black/40 px-3 py-1 rounded border border-white/5 flex items-center gap-2">
+                <span className="tracking-widest text-[10px]">SCORE</span>
+                <span className="text-white font-bold text-base">
+                  {/* Formata para 0000 (ex: 0010, 0150) */}
+                  {score.toString().padStart(4, '0')}
+                </span>
              </div>
         </div>
 
-        {/* Linha 2: Timer e Disciplina Específica */}
+        {/* Timer e Disciplina */}
         <div className="flex justify-between items-end">
             <Badge variant="outline" className="text-primary border-primary/50 bg-primary/10 px-3 py-1 text-xs md:text-sm font-bold tracking-widest w-fit">
                 <History className="mr-2 h-3 w-3" /> 
@@ -118,7 +121,6 @@ export default function GameArena() {
                     {timeLeft < 10 ? `00:0${timeLeft}` : `00:${timeLeft}`}
                     </span>
                 </div>
-                {/* Barra de Progresso */}
                 <div className="w-full h-2 bg-gray-900 rounded-sm border border-gray-800 overflow-hidden">
                     <div 
                         className={cn("h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_currentColor]", isClutch ? "bg-destructive text-destructive" : "bg-primary text-primary")}
@@ -129,7 +131,7 @@ export default function GameArena() {
         </div>
       </header>
 
-      {/* --- TELAS DE FIM DE JOGO (Mantidas) --- */}
+      {/* --- TELAS DE FIM DE JOGO --- */}
       {status === 'gameover' && (
         <div className="absolute inset-0 z-50 bg-black/95 flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300 p-8 text-center">
           <h1 className="text-4xl font-black text-destructive text-glitch mb-2">FALHA NO SISTEMA</h1>
@@ -148,14 +150,16 @@ export default function GameArena() {
       {status === 'victory' && (
         <div className="absolute inset-0 z-50 bg-black/95 flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300 p-8 text-center">
           <h1 className="text-4xl font-black text-primary text-glitch mb-2">QUESTÃO HACKEADA!</h1>
-          <p className="text-gray-400 mb-8">Score Final: {score}</p>
-          <Button onClick={startGame} size="lg" className="bg-primary text-black hover:bg-primary/90 font-bold shadow-neon-lime w-full">
+          <p className="text-gray-400 mb-8">Score Atual: <span className="text-white font-bold">{score}</span></p>
+          
+          {/* 👇 AQUI ESTÁ A CORREÇÃO: Chama nextLevel para ACUMULAR PONTOS */}
+          <Button onClick={nextLevel} size="lg" className="bg-primary text-black hover:bg-primary/90 font-bold shadow-neon-lime w-full">
             PRÓXIMO NÍVEL
           </Button>
         </div>
       )}
 
-      {/* --- STAGE (Dica e Slots) --- */}
+      {/* --- STAGE --- */}
       <div className="flex-1 flex flex-col items-center z-10 justify-center">
         <Card className="glass-panel w-full mb-6 animate-accordion-down border-white/5">
           <CardContent className="p-4 flex flex-col gap-1">
@@ -186,7 +190,7 @@ export default function GameArena() {
         </div>
       </div>
 
-      {/* --- KEYPAD & POWERUPS --- */}
+      {/* --- KEYPAD --- */}
       <div className="z-10 mt-auto flex flex-col gap-3 pb-2">
         <div className="grid grid-cols-5 gap-1.5 justify-items-center">
            {keyboard.map((keyObj, idx) => (
