@@ -4,12 +4,12 @@ import { devtools } from 'zustand/middleware';
 import questionsData from '@/data/questions.json';
 
 // --- TIPOS ---
-
 export type GameStatus = 'idle' | 'playing' | 'paused' | 'gameover' | 'victory';
+export type FilterMode = 'MIX' | 'HUM' | 'NAT' | 'LIN'; // 👈 NOVOS MODOS
 
 export type KeyboardKey = {
   char: string;
-  status: 'idle' | 'correct' | 'wrong' | 'disabled'; // 'disabled' é usado pela Lixeira
+  status: 'idle' | 'correct' | 'wrong' | 'disabled';
 };
 
 export type Question = {
@@ -25,11 +25,11 @@ type GameState = {
   timeLeft: number;
   streak: number;
   status: GameStatus;
+  filterMode: FilterMode; // 👈 Estado do Filtro
   
-  // Power-Ups (Quantidade disponível)
   powerups: {
-    reveal: number; // 🔍 Lupa
-    trash: number;  // 🗑️ Lixeira
+    reveal: number;
+    trash: number;
   };
 
   currentQuestion: Question | null;
@@ -39,17 +39,21 @@ type GameState = {
 
 type GameActions = {
   startGame: () => void;
+  setFilterMode: (mode: FilterMode) => void; // 👈 Action para mudar o modo
   tickTimer: () => void;
   submitGuess: (letter: string) => void;
-  
-  // Novas Actions de Power-Up
   useRevealPowerup: () => void;
   useTrashPowerup: () => void;
-  
   resetGame: () => void;
 };
 
-// --- STORE ---
+// --- MAPA DE CATEGORIAS ---
+// Agrupa as tags do JSON nas grandes áreas
+const CATEGORY_MAP: Record<string, string[]> = {
+  'HUM': ['HIST', 'GEO', 'FILO', 'SOC'],
+  'NAT': ['MAT', 'FIS', 'QUIM', 'BIO'],
+  'LIN': ['LIN', 'LIT', 'ING', 'ESP', 'ART', 'EDF']
+};
 
 export const useGameStore = create<GameState & GameActions>()(
   devtools(
@@ -58,10 +62,16 @@ export const useGameStore = create<GameState & GameActions>()(
       timeLeft: 60,
       streak: 0,
       status: 'idle',
-      powerups: { reveal: 3, trash: 3 }, // Começa com 3 de cada
+      filterMode: 'MIX', // Padrão: Mistureba
+      powerups: { reveal: 3, trash: 3 },
       currentQuestion: null,
       revealedLetters: [],
       keyboard: [],
+
+      // Action simples para trocar o modo no menu
+      setFilterMode: (mode) => {
+        set((state) => { state.filterMode = mode; });
+      },
 
       startGame: () => {
         set((state) => {
@@ -69,12 +79,27 @@ export const useGameStore = create<GameState & GameActions>()(
           state.score = 0;
           state.timeLeft = 60;
           state.streak = 0;
-          state.powerups = { reveal: 3, trash: 3 }; // Reseta os itens na nova partida
+          state.powerups = { reveal: 3, trash: 3 };
           
-          // Sorteio da Questão
-          const randomIndex = Math.floor(Math.random() * questionsData.length);
-          const selectedQuestion = questionsData[randomIndex];
+          // 1. FILTRAGEM INTELIGENTE 🧠
+          let pool = questionsData;
 
+          if (state.filterMode !== 'MIX') {
+            const allowedTags = CATEGORY_MAP[state.filterMode];
+            // Filtra o JSON apenas com as disciplinas da área escolhida
+            const filtered = questionsData.filter(q => allowedTags.includes(q.discipline));
+            
+            // Se tiver questões suficientes, usa o filtro. Se não (fallback), usa tudo.
+            if (filtered.length > 0) {
+              pool = filtered;
+            }
+          }
+
+          // 2. Sorteio (usando o pool filtrado)
+          const randomIndex = Math.floor(Math.random() * pool.length);
+          const selectedQuestion = pool[randomIndex];
+
+          // 3. Montagem da Questão
           const newQuestion: Question = {
             id: selectedQuestion.id,
             discipline: selectedQuestion.discipline,
@@ -86,11 +111,11 @@ export const useGameStore = create<GameState & GameActions>()(
           state.currentQuestion = newQuestion;
           state.revealedLetters = Array(newQuestion.answer.length).fill('');
 
-          // Gerador de Teclado
+          // 4. Teclado
           const answerChars = newQuestion.answer.split('');
-          const distractors = ['X', 'A', 'B', 'Z', 'M', 'R', 'S', 'T', 'L', 'C', 'V', 'P'];
-          const pool = Array.from(new Set([...answerChars, ...distractors])).slice(0, 15);
-          const shuffledKeys = pool.sort(() => Math.random() - 0.5);
+          const distractors = ['X', 'A', 'B', 'Z', 'M', 'R', 'S', 'T', 'L', 'C', 'V', 'P', 'E', 'O'];
+          const uniquePool = Array.from(new Set([...answerChars, ...distractors])).slice(0, 15);
+          const shuffledKeys = uniquePool.sort(() => Math.random() - 0.5);
           
           state.keyboard = shuffledKeys.map(char => ({ char, status: 'idle' }));
         });
@@ -107,100 +132,58 @@ export const useGameStore = create<GameState & GameActions>()(
         });
       },
 
-      // 🔍 POWER-UP: LUPA
       useRevealPowerup: () => {
-        set((state) => {
-          if (state.status !== 'playing' || state.powerups.reveal <= 0 || !state.currentQuestion) return;
-
-          // 1. Achar índices que ainda estão vazios
-          const emptyIndices = state.revealedLetters
-            .map((char, idx) => char === '' ? idx : -1)
-            .filter(idx => idx !== -1);
-
-          if (emptyIndices.length === 0) return;
-
-          // 2. Escolher um aleatório
-          const randomIdx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-          const letterToReveal = state.currentQuestion.answer[randomIdx];
-
-          // 3. Revelar no Painel
-          state.revealedLetters[randomIdx] = letterToReveal;
-
-          // 4. Marcar no Teclado como "Correto"
-          const keyInBoard = state.keyboard.find(k => k.char === letterToReveal);
-          if (keyInBoard) keyInBoard.status = 'correct';
-
-          // 5. Gastar o item
-          state.powerups.reveal -= 1;
-
-          // 6. Checar Vitória (caso a lupa complete a palavra)
-          if (!state.revealedLetters.includes('')) {
-            state.status = 'victory';
-          }
-        });
+         // ... (Mesma lógica de antes)
+         set((state) => {
+            if (state.status !== 'playing' || state.powerups.reveal <= 0 || !state.currentQuestion) return;
+            const emptyIndices = state.revealedLetters.map((c, i) => c === '' ? i : -1).filter(i => i !== -1);
+            if (emptyIndices.length === 0) return;
+            const randomIdx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            const char = state.currentQuestion.answer[randomIdx];
+            state.revealedLetters[randomIdx] = char;
+            const key = state.keyboard.find(k => k.char === char);
+            if (key) key.status = 'correct';
+            state.powerups.reveal -= 1;
+            if (!state.revealedLetters.includes('')) state.status = 'victory';
+         });
       },
 
-      // 🗑️ POWER-UP: LIXEIRA
       useTrashPowerup: () => {
+        // ... (Mesma lógica de antes)
         set((state) => {
-          if (state.status !== 'playing' || state.powerups.trash <= 0 || !state.currentQuestion) return;
-
-          const answer = state.currentQuestion.answer;
-
-          // 1. Achar teclas que são distratores (não estão na resposta) e estão 'idle'
-          const trashableKeys = state.keyboard.filter(
-            k => !answer.includes(k.char) && k.status === 'idle'
-          );
-
-          if (trashableKeys.length === 0) return;
-
-          // 2. Eliminar até 3 teclas aleatórias
-          const keysToRemove = trashableKeys
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 3); // Remove 3
-
-          keysToRemove.forEach(kToRemove => {
-            const key = state.keyboard.find(k => k.char === kToRemove.char);
-            if (key) key.status = 'disabled'; // Nova cor visual (apagado)
-          });
-
-          // 3. Gastar o item
-          state.powerups.trash -= 1;
+            if (state.status !== 'playing' || state.powerups.trash <= 0 || !state.currentQuestion) return;
+            const ans = state.currentQuestion.answer;
+            const trashable = state.keyboard.filter(k => !ans.includes(k.char) && k.status === 'idle');
+            if (trashable.length === 0) return;
+            const toRemove = trashable.sort(() => Math.random() - 0.5).slice(0, 3);
+            toRemove.forEach(r => {
+                const k = state.keyboard.find(key => key.char === r.char);
+                if (k) k.status = 'disabled';
+            });
+            state.powerups.trash -= 1;
         });
       },
 
       submitGuess: (letter) => {
+        // ... (Mesma lógica de antes)
         set((state) => {
-          if (state.status !== 'playing' || !state.currentQuestion) return;
+            if (state.status !== 'playing' || !state.currentQuestion) return;
+            const ans = state.currentQuestion.answer;
+            const kIdx = state.keyboard.findIndex(k => k.char === letter);
+            if (kIdx !== -1 && state.keyboard[kIdx].status === 'disabled') return;
 
-          const answer = state.currentQuestion.answer;
-          const keyIndex = state.keyboard.findIndex(k => k.char === letter);
-
-          // Se a tecla já foi desabilitada pela lixeira, ignora
-          if (keyIndex !== -1 && state.keyboard[keyIndex].status === 'disabled') return;
-
-          if (answer.includes(letter)) {
-            // ACERTO
-            if (keyIndex !== -1) state.keyboard[keyIndex].status = 'correct';
-            
-            answer.split('').forEach((char, index) => {
-              if (char === letter) state.revealedLetters[index] = letter;
-            });
-
-            state.score += 10 + (state.streak * 5);
-            state.streak += 1;
-            state.timeLeft += 2; 
-
-            if (!state.revealedLetters.includes('')) {
-               state.status = 'victory';
+            if (ans.includes(letter)) {
+                if (kIdx !== -1) state.keyboard[kIdx].status = 'correct';
+                ans.split('').forEach((c, i) => { if (c === letter) state.revealedLetters[i] = letter; });
+                state.score += 10 + (state.streak * 5);
+                state.streak += 1;
+                state.timeLeft += 2;
+                if (!state.revealedLetters.includes('')) state.status = 'victory';
+            } else {
+                if (kIdx !== -1) state.keyboard[kIdx].status = 'wrong';
+                state.streak = 0;
+                state.timeLeft -= 5;
             }
-
-          } else {
-            // ERRO
-            if (keyIndex !== -1) state.keyboard[keyIndex].status = 'wrong';
-            state.streak = 0;
-            state.timeLeft -= 5;
-          }
         });
       },
 
