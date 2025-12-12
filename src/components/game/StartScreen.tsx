@@ -2,13 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { GlitchTitle } from "./GlitchTitle";
-import { Play, Brain, Dna, BookOpen, Shuffle } from "lucide-react"; // Removi ícones não usados aqui
+// 👇 1. Adicionei BrainCircuit (Cérebro Tecnológico) para usar como ícone
+import { Play, Brain, Dna, BookOpen, Shuffle, BrainCircuit } from "lucide-react"; 
 import { useGameStore, FilterMode } from "@/lib/store/useGameStore";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { playSFX } from "@/lib/audio"; 
 import { RankingDialog } from "./RankingDialog"; 
-import { AboutDialog } from "./AboutDialog"; // 👈 1. Importando o componente Sobre
+import { AboutDialog } from "./AboutDialog";
+// ❌ Removi o import do CyberLogo (já que não vamos usar na tela)
 
 // Opções de Jogo
 const MODES: { id: FilterMode; label: string; icon: any; color: string }[] = [
@@ -31,15 +33,24 @@ export function StartScreen() {
       {/* Fundo */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
-      {/* LOGO */}
+      {/* HEADER: ÍCONE + TÍTULO */}
       <div className="flex flex-col items-center text-center gap-2 mt-4">
         <motion.div 
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
+          className="flex flex-col items-center"
         >
+          {/* 👇 2. ÍCONE NATIVO (Mais limpo que o logo customizado) */}
+          <div className="mb-4 relative group">
+             {/* Brilho verde atrás */}
+             <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse group-hover:bg-primary/40 transition-all" /> 
+             {/* Ícone de Cérebro/Circuito */}
+             <BrainCircuit className="w-20 h-20 text-primary drop-shadow-[0_0_15px_rgba(19,236,128,0.5)]" strokeWidth={1.5} />
+          </div>
+
           <div className="flex items-center gap-2 justify-center mb-2">
-             <span className="bg-primary text-black text-xs font-bold px-2 py-0.5 rounded-sm">V.2025</span>
+             <span className="bg-primary text-black text-xs font-bold px-2 py-0.5 rounded-sm shadow-neon-lime">V.2025</span>
           </div>
           <GlitchTitle text="CYBER" className="text-white" />
           <GlitchTitle text="ARENA" className="text-primary mt-[-10px]" />
@@ -103,7 +114,7 @@ export function StartScreen() {
                <RankingDialog />
             </div>
 
-            {/* 👇 2. Botão Sobre Atualizado */}
+            {/* Botão Sobre */}
             <div onMouseEnter={handleHover} className="w-full">
                <AboutDialog />
             </div>
