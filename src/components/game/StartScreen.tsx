@@ -6,17 +6,23 @@ import { Play, Trophy, Skull, Brain, Dna, BookOpen, Shuffle } from "lucide-react
 import { useGameStore, FilterMode } from "@/lib/store/useGameStore";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { playSFX } from "@/lib/audio"; // 👈 1. Importando o som
 
 // Opções de Jogo
 const MODES: { id: FilterMode; label: string; icon: any; color: string }[] = [
   { id: 'MIX', label: 'ARENA GERAL', icon: Shuffle, color: "text-primary" },
-  { id: 'HUM', label: 'HUMANAS', icon: Brain, color: "text-neon-pink" }, // Usando classes de cor ou hex direto se precisar
+  { id: 'HUM', label: 'HUMANAS', icon: Brain, color: "text-neon-pink" },
   { id: 'NAT', label: 'NATUREZA', icon: Dna, color: "text-blue-400" },
   { id: 'LIN', label: 'LINGUAGENS', icon: BookOpen, color: "text-yellow-400" },
 ];
 
 export function StartScreen() {
   const { startGame, filterMode, setFilterMode } = useGameStore();
+
+  // 👈 2. Função segura para tocar o som (volume 20% para não irritar)
+  const handleHover = () => {
+    playSFX('hover', 0.2); 
+  };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen w-full relative z-20 gap-6 p-4">
@@ -55,6 +61,7 @@ export function StartScreen() {
               <button
                 key={mode.id}
                 onClick={() => setFilterMode(mode.id)}
+                onMouseEnter={handleHover} // 👈 3. Som aqui
                 className={cn(
                   "flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all duration-200",
                   isSelected 
@@ -80,7 +87,8 @@ export function StartScreen() {
         className="flex flex-col gap-4 w-full max-w-xs z-10"
       >
         <Button 
-          onClick={startGame} 
+          onClick={startGame}
+          onMouseEnter={handleHover} // 👈 3. Som aqui
           size="xl" 
           className="h-16 text-xl font-black italic tracking-widest uppercase bg-primary text-black hover:bg-primary/90 shadow-neon-lime group relative overflow-hidden"
         >
@@ -89,10 +97,18 @@ export function StartScreen() {
         </Button>
 
         <div className="grid grid-cols-2 gap-3">
-            <Button variant="outline" className="border-gray-800 bg-gray-900/50 hover:bg-gray-800 hover:text-white text-xs">
+            <Button 
+              variant="outline" 
+              onMouseEnter={handleHover} // 👈 3. Som aqui
+              className="border-gray-800 bg-gray-900/50 hover:bg-gray-800 hover:text-white text-xs"
+            >
                 <Trophy className="mr-2 h-3 w-3 text-accent" /> RANKING
             </Button>
-            <Button variant="outline" className="border-gray-800 bg-gray-900/50 hover:bg-gray-800 hover:text-white text-xs">
+            <Button 
+              variant="outline" 
+              onMouseEnter={handleHover} // 👈 3. Som aqui
+              className="border-gray-800 bg-gray-900/50 hover:bg-gray-800 hover:text-white text-xs"
+            >
                 <Skull className="mr-2 h-3 w-3 text-destructive" /> SOBRE
             </Button>
         </div>
