@@ -31,7 +31,7 @@ export default function GameArena() {
     keyboard,
     filterMode, 
     startGame,
-    nextLevel, // 👈 IMPORTANTE: A função que mantém os pontos
+    nextLevel, 
     tickTimer, 
     submitGuess,
     useRevealPowerup, 
@@ -39,7 +39,7 @@ export default function GameArena() {
     resetGame 
   } = useGameStore();
 
-  // Relógio
+  // Relógio do Jogo
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (status === 'playing') {
@@ -75,8 +75,9 @@ export default function GameArena() {
       {/* HEADER TÁTICO */}
       <header className="flex flex-col gap-2 mb-4 z-10 pt-2">
         
+        {/* Linha 1: Navegação e Modo */}
         <div className="flex items-center justify-between">
-            {/* Voltar */}
+            {/* Botão Voltar (Abortar) */}
             <Button 
                 variant="ghost" 
                 size="icon" 
@@ -86,7 +87,7 @@ export default function GameArena() {
                 <ArrowLeft className="h-6 w-6" />
             </Button>
 
-            {/* Protocolo */}
+            {/* Indicador de Protocolo */}
             <div className="flex items-center gap-2 bg-gray-900/80 border border-white/10 px-3 py-1 rounded-full">
                 <ModeIcon className={cn("h-4 w-4", activeMode.color)} />
                 <span className={cn("text-[10px] font-black tracking-widest text-gray-300")}>
@@ -94,17 +95,16 @@ export default function GameArena() {
                 </span>
             </div>
             
-            {/* 👇 SCORE CORRIGIDO E ESTILIZADO 👇 */}
+            {/* Score Estilizado */}
              <div className="font-mono text-xs text-gray-400 bg-black/40 px-3 py-1 rounded border border-white/5 flex items-center gap-2">
                 <span className="tracking-widest text-[10px]">SCORE</span>
                 <span className="text-white font-bold text-base">
-                  {/* Formata para 0000 (ex: 0010, 0150) */}
                   {score.toString().padStart(4, '0')}
                 </span>
              </div>
         </div>
 
-        {/* Timer e Disciplina */}
+        {/* Linha 2: Timer e Disciplina Específica */}
         <div className="flex justify-between items-end">
             <Badge variant="outline" className="text-primary border-primary/50 bg-primary/10 px-3 py-1 text-xs md:text-sm font-bold tracking-widest w-fit">
                 <History className="mr-2 h-3 w-3" /> 
@@ -121,6 +121,7 @@ export default function GameArena() {
                     {timeLeft < 10 ? `00:0${timeLeft}` : `00:${timeLeft}`}
                     </span>
                 </div>
+                {/* Barra de Progresso */}
                 <div className="w-full h-2 bg-gray-900 rounded-sm border border-gray-800 overflow-hidden">
                     <div 
                         className={cn("h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_currentColor]", isClutch ? "bg-destructive text-destructive" : "bg-primary text-primary")}
@@ -152,14 +153,13 @@ export default function GameArena() {
           <h1 className="text-4xl font-black text-primary text-glitch mb-2">QUESTÃO HACKEADA!</h1>
           <p className="text-gray-400 mb-8">Score Atual: <span className="text-white font-bold">{score}</span></p>
           
-          {/* 👇 AQUI ESTÁ A CORREÇÃO: Chama nextLevel para ACUMULAR PONTOS */}
           <Button onClick={nextLevel} size="lg" className="bg-primary text-black hover:bg-primary/90 font-bold shadow-neon-lime w-full">
             PRÓXIMO NÍVEL
           </Button>
         </div>
       )}
 
-      {/* --- STAGE --- */}
+      {/* --- STAGE (Dica e Slots) --- */}
       <div className="flex-1 flex flex-col items-center z-10 justify-center">
         <Card className="glass-panel w-full mb-6 animate-accordion-down border-white/5">
           <CardContent className="p-4 flex flex-col gap-1">
@@ -190,7 +190,7 @@ export default function GameArena() {
         </div>
       </div>
 
-      {/* --- KEYPAD --- */}
+      {/* --- KEYPAD & POWERUPS --- */}
       <div className="z-10 mt-auto flex flex-col gap-3 pb-2">
         <div className="grid grid-cols-5 gap-1.5 justify-items-center">
            {keyboard.map((keyObj, idx) => (

@@ -49,7 +49,7 @@ type GameState = {
 
 type GameActions = {
   startGame: () => void;
-  nextLevel: () => void; // 👈 1. AÇÃO NOVA ADICIONADA AQUI
+  nextLevel: () => void; // 👈 Ação para passar de fase sem zerar pontos
   setFilterMode: (mode: FilterMode) => void;
   tickTimer: () => void;
   submitGuess: (letter: string) => void;
@@ -84,7 +84,7 @@ export const useGameStore = create<GameState & GameActions>()(
           set((state) => { state.filterMode = mode; });
         },
 
-        // INICIAR DO ZERO (Reseta tudo)
+        // INICIAR DO ZERO (Reseta Score, Vidas e Powerups)
         startGame: () => {
           set((state) => {
             state.status = 'playing';
@@ -123,11 +123,12 @@ export const useGameStore = create<GameState & GameActions>()(
           });
         },
 
-        // PRÓXIMO NÍVEL (Mantém Score e Streak) 👈 2. IMPLEMENTAÇÃO DA NOVA AÇÃO
+        // PRÓXIMO NÍVEL (Mantém Score e Streak) 👈
         nextLevel: () => {
           set((state) => {
             state.status = 'playing';
             state.timeLeft = 60; // Renova o tempo
+            
             // Nota: NÃO resetamos score, streak ou powerups aqui!
 
             // Sorteio de nova questão
