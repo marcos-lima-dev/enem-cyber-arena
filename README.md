@@ -1,9 +1,3 @@
-Com certeza\! Um `README.md` bem feito é o cartão de visitas do projeto. Ele precisa explicar não só **como rodar**, mas **qual é a alma** do jogo e as decisões técnicas inteligentes que tomamos (como o uso do Immer).
-
-Aqui está a versão definitiva, pronta para você copiar e colar na raiz do seu projeto.
-
------
-
 # ⚡ ENEM CYBER-ARENA
 
   
