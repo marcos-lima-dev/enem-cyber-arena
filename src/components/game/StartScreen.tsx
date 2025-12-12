@@ -2,11 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { GlitchTitle } from "./GlitchTitle";
-import { Play, Trophy, Skull, Brain, Dna, BookOpen, Shuffle } from "lucide-react";
+import { Play, Brain, Dna, BookOpen, Shuffle } from "lucide-react"; // Removi ícones não usados aqui
 import { useGameStore, FilterMode } from "@/lib/store/useGameStore";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { playSFX } from "@/lib/audio"; // 👈 1. Importando o som
+import { playSFX } from "@/lib/audio"; 
+import { RankingDialog } from "./RankingDialog"; 
+import { AboutDialog } from "./AboutDialog"; // 👈 1. Importando o componente Sobre
 
 // Opções de Jogo
 const MODES: { id: FilterMode; label: string; icon: any; color: string }[] = [
@@ -19,7 +21,6 @@ const MODES: { id: FilterMode; label: string; icon: any; color: string }[] = [
 export function StartScreen() {
   const { startGame, filterMode, setFilterMode } = useGameStore();
 
-  // 👈 2. Função segura para tocar o som (volume 20% para não irritar)
   const handleHover = () => {
     playSFX('hover', 0.2); 
   };
@@ -27,7 +28,7 @@ export function StartScreen() {
   return (
     <div className="flex flex-col items-center justify-center h-screen w-full relative z-20 gap-6 p-4">
       
-      {/* Decoração de Fundo */}
+      {/* Fundo */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
       {/* LOGO */}
@@ -45,7 +46,7 @@ export function StartScreen() {
         </motion.div>
       </div>
 
-      {/* SELETOR DE ÁREA (GRID) */}
+      {/* GRID DE SELEÇÃO */}
       <motion.div 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
         className="w-full max-w-xs"
@@ -61,7 +62,7 @@ export function StartScreen() {
               <button
                 key={mode.id}
                 onClick={() => setFilterMode(mode.id)}
-                onMouseEnter={handleHover} // 👈 3. Som aqui
+                onMouseEnter={handleHover}
                 className={cn(
                   "flex flex-col items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all duration-200",
                   isSelected 
@@ -79,7 +80,7 @@ export function StartScreen() {
         </div>
       </motion.div>
 
-      {/* BOTÃO START */}
+      {/* BOTÕES PRINCIPAIS */}
       <motion.div 
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -88,7 +89,7 @@ export function StartScreen() {
       >
         <Button 
           onClick={startGame}
-          onMouseEnter={handleHover} // 👈 3. Som aqui
+          onMouseEnter={handleHover}
           size="xl" 
           className="h-16 text-xl font-black italic tracking-widest uppercase bg-primary text-black hover:bg-primary/90 shadow-neon-lime group relative overflow-hidden"
         >
@@ -97,20 +98,15 @@ export function StartScreen() {
         </Button>
 
         <div className="grid grid-cols-2 gap-3">
-            <Button 
-              variant="outline" 
-              onMouseEnter={handleHover} // 👈 3. Som aqui
-              className="border-gray-800 bg-gray-900/50 hover:bg-gray-800 hover:text-white text-xs"
-            >
-                <Trophy className="mr-2 h-3 w-3 text-accent" /> RANKING
-            </Button>
-            <Button 
-              variant="outline" 
-              onMouseEnter={handleHover} // 👈 3. Som aqui
-              className="border-gray-800 bg-gray-900/50 hover:bg-gray-800 hover:text-white text-xs"
-            >
-                <Skull className="mr-2 h-3 w-3 text-destructive" /> SOBRE
-            </Button>
+            {/* Botão Ranking */}
+            <div onMouseEnter={handleHover} className="w-full">
+               <RankingDialog />
+            </div>
+
+            {/* 👇 2. Botão Sobre Atualizado */}
+            <div onMouseEnter={handleHover} className="w-full">
+               <AboutDialog />
+            </div>
         </div>
       </motion.div>
     </div>
