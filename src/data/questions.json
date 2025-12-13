@@ -84,13 +84,6 @@
     "answer": "025 AMPERE"
   },
   {
-    "id": "2022_questao_108",
-    "discipline": "GERAL",
-    "topic": "ENEM 2022",
-    "hint": "O manual de uma ducha elétrica informa que seus três níveis de aquecimento (morno, quente e superquente) apresentam as seguintes variações de temperatura da água em função de sua vazão: | Vazão (L/min) | delta T(°C) | Unnamed: 2 | Unnamed: 3 | |-----------------------:|:----------|:-------------|:-------------| | nan | Morno | Quente | Superquente | | 3 | 10 | 20 | 30 | | 6 | 5 | 10 | 15 | Utiliza-se um disjuntor para proteger o circuito dessa ducha contra sobrecargas elétricas em qualquer nível de aquecimento. Por padrão, o disjuntor é especificado pela corrente nominal igual ao múltiplo de 5 ampères imediatamente superior à corrente máxima do circuito. Considere que a ducha deve ser ligada em 220 volts e que toda a energia é dissipada através da resistência do chuveiro e convertida em energia térmica transferida para a água, que apresenta calor específico de 4,2 joules por grama por grau Celsius e densidade de 1 000 gramas por litro. O disjuntor adequado para a proteção dessa ducha é especificado por:",
-    "answer": "30 AMPERES"
-  },
-  {
     "id": "2022_questao_109",
     "discipline": "GERAL",
     "topic": "ENEM 2022",
@@ -112,13 +105,6 @@
     "answer": "450 NEWTONS"
   },
   {
-    "id": "2022_questao_115",
-    "discipline": "GERAL",
-    "topic": "ENEM 2022",
-    "hint": "O elemento iodo (I) tem função biológica e é acumulado na tireoide. Nos acidentes nucleares de Chernobyl e Fukushima, ocorreu a liberação para a atmosfera do radioisótopo iodo-131, responsável por enfermidades nas pessoas que foram expostas a ele. O decaimento de uma massa de 12 microgramas do isótopo iodo-131 foi monitorado por 14 dias, conforme o quadro. | Tempo (dia) | Massa residual de iodo-131 (µg) | |---------------:|:-------------------------------| | 0 | 12,0 | | 2 | 10,1 | | 4 | 8,5 | | 5 | 7,8 | | 6 | 7,2 | | 8 | 6,0 | | 14 | 3,6 | Após o período de 40 dias, a massa residual desse isótopo é mais próxima de",
-    "answer": "04 MICROGRAMA"
-  },
-  {
     "id": "2022_questao_122",
     "discipline": "GERAL",
     "topic": "ENEM 2022",
@@ -138,20 +124,6 @@
     "topic": "ENEM 2022",
     "hint": "Em um dia de calor intenso, dois colegas estão a brincar com a água da mangueira. Um deles quer saber até que altura o jato de água alcança, a partir da saída de água, quando a mangueira está posicionada totalmente na direção vertical. O outro colega propõe então o seguinte experimento: eles posicionarem a saída de água da mangueira na direção horizontal, a 1 metro de altura em relação ao chão, e então medirem a distância horizontal entre a mangueira e o local onde a água atinge o chão. A medida dessa distância foi de 3 metros, e a partir disso eles calcularam o alcance vertical do jato de água. Considere a aceleração da gravidade de 10 metros por segundo ao quadrado. O resultado que eles obtiveram foi de",
     "answer": "225 METROS"
-  },
-  {
-    "id": "2022_questao_126",
-    "discipline": "GERAL",
-    "topic": "ENEM 2022",
-    "hint": "O etanol é um combustível produzido a partir da fermentação da sacarose presente no caldo de cana--de-açúcar. Um dos fatores que afeta a produção desse álcool é o grau de deterioração da sacarose, que se inicia após o corte, por causa da ação de microrganismos. Foram analisadas cinco amostras de diferentes tipos de cana-de--açúcar e cada uma recebeu um código de identificação. No quadro são apresentados os dados de concentração de sacarose e de microrganismos presentes nessas amostras. | Unnamed: 0 | Amostra de cana-de-açúcar | Unnamed: 2 | Unnamed: 3 | Unnamed: 4 | Unnamed: 5 | |:-------------|:-----------------------------|:-------------|:-------------|:-------------|:-------------| | nan | RB72 | RB84 | RB92 | SP79 | SP80 | | Concentração inicial de sacarose (g L−1) | 13,0 | 18,0 | 16,0 | 14,0 | 17,0 | | Concentração de microrganismos (mg L−1) | 0,7 | 0,8 | 0,6 | 0,5 | 0,9 | Pretende-se escolher o tipo de cana-de-açúcar que conterá o maior teor de sacarose 10 horas após o corte e que, consequentemente, produzirá a maior quantidade de etanol por fermentação. Considere que existe uma redução de aproximadamente 50 por cento da concentração de sacarose nesse tempo, para cada 1,0 miligrama por litro de microrganismos presentes na cana-de-açúcar. Qual tipo de cana-de-açúcar deve ser escolhido?",
-    "answer": "RB92"
-  },
-  {
-    "id": "2022_questao_128",
-    "discipline": "GERAL",
-    "topic": "ENEM 2022",
-    "hint": "Biofísica: fundamentos e aplicações O quadro mostra valores de corrente elétrica e seus efeitos sobre o corpo humano. | Corrente elétrica | Dano físico | |:---------------------|:----------------------------------| | Até 10 mA | Dor e contração muscular | | De 10 mA até 20 mA | Aumento das contrações musculares | | De 20 mA até 100 mA | Parada respiratória | | De 100 mA até 3 A | Fibrilação ventricular | | Acima de 3 A | Parada cardíaca e queimaduras | A corrente elétrica que percorrerá o corpo de um indivíduo depende da tensão aplicada e da resistência elétrica média do corpo humano. Esse último fator está intimamente relacionado com a umidade da pele, que seca apresenta resistência elétrica da ordem de 500 quilo-ohms, mas, se molhada, pode chegar a apenas 1 quilo-ohm. Apesar de incomum, é possível sofrer um acidente utilizando baterias de 12 volts. Considere que um indivíduo com a pele molhada sofreu uma parada respiratória ao tocar simultaneamente nos pontos A e B de uma associação de duas dessas baterias. Qual associação de baterias foi responsável pelo acidente?",
-    "answer": "PLACEHOLDER"
   },
   {
     "id": "2022_questao_129",
@@ -180,13 +152,6 @@
     "topic": "ENEM 2022",
     "hint": "A esperança de vida ao nascer é o número médio de anos que um indivíduo tende a viver a partir de seu nascimento, considerando dados da população. No Brasil, esse número vem aumentando consideravelmente, como mostra o gráfico. Pode-se observar que a esperança de vida ao nascer em 2012 foi exatamente a média das registradas nos anos de 2011 e 2013. Suponha que esse fato também ocorreu com a esperança de vida ao nascer em 2013, em relação às esperanças de vida de 2012 e de 2014. Caso a suposição feita tenha sido confirmada, a esperança de vida ao nascer no Brasil no ano de 2014 terá sido, em ano, igual a",
     "answer": "7451"
-  },
-  {
-    "id": "2022_questao_144",
-    "discipline": "GERAL",
-    "topic": "ENEM 2022",
-    "hint": "Uma instituição de ensino superior ofereceu vagas em um processo seletivo de acesso a seus cursos. Finalizadas as inscrições, foi divulgada a relação do número de candidatos por vaga em cada um dos cursos oferecidos. Esses dados são apresentados no quadro. | Curso | Número de vagas oferecidas | Número de candidatos por vaga | |:--------------------|------------------------------:|---------------------------------:| | Administração | 30 | 6 | | Ciências Contábeis | 40 | 6 | | Engenharia Elétrica | 50 | 7 | | História | 30 | 8 | | Letras | 25 | 4 | | Pedagogia | 25 | 5 | Qual foi o número total de candidatos inscritos nesse processo seletivo? |:-----|:-------| | A | 200 | | B | 400 | | C | 1 200 | | D | 1 235 | | E | 7 200 |",
-    "answer": "1 235"
   },
   {
     "id": "2022_questao_145",
@@ -229,13 +194,6 @@
     "topic": "ENEM 2022",
     "hint": "Quarenta mudas de flores devem ser plantadas no contorno de um canteiro circular de 2,2 metros de diâmetro, com um espaçamento padrão de 12 centímetros entre mudas. Fazendo-se os cálculos, chegou-se à conclusão de que não havia mudas suficientes e optou-se, então, por alterar o espaçamento padrão. Use 3 como aproximação para pi. Em quantos centímetros deve ser aumentado o espaçamento padrão entre as mudas?",
     "answer": "450"
-  },
-  {
-    "id": "2022_questao_154",
-    "discipline": "GERAL",
-    "topic": "ENEM 2022",
-    "hint": "As empresas de capital aberto listadas na Bolsa de Valores de São Paulo (Bovespa) que melhor remuneram seus acionistas na distribuição dos lucros costumam pagar 25 por cento de seus lucros líquidos trimestrais como dividendos aos acionistas. Uma empresa de capital social listada na Bolsa de Valores de São Paulo (Bovespa) divulgou resumidamente no quadro abaixo o seguinte resultado: | | | |----------------------------|-------------------| | Receitas líquidas | R$ 422 000 000,00 | | Lucro bruto | R$ 76 000 000,00 | | Lucro líquido | R$ 28 000 000,00 | | Lucro líquido por ação | R$ 0,28 | Quanto receberá de dividendos um acionista que tem 1 400 ações desta empresa?",
-    "answer": "98 REAIS"
   },
   {
     "id": "2022_questao_155",
@@ -334,13 +292,6 @@
     "topic": "ENEM 2023",
     "hint": "Toxicidade do cianeto # Biologia molecular da célula A produção de ATP depende do gradiente de prótons gerado pela cadeia respiratória. Nessas reações, conforme o esquema, os elétrons provenientes da oxidação do NADH em NAD de carga positiva percorrem a cadeia até chegarem à citocromo c oxidase reduzindo o Fe de carga 3 positiva a Fe de carga 2 positiva. O oxigênio atua como aceptor final desses elétrons formando água. O cianeto é uma espécie química altamente tóxica que tem grande afinidade pelo Fe de carga 3 positiva. Quando células são expostas ao cianeto, ele se liga ao sítio de Fe de carga 3 positiva da citocromo c oxidase, impedindo a sua conversão em Fe de carga 2 positiva e bloqueando a cadeia respiratória. Esse bloqueio aumenta a concentração celular de",
     "answer": "NADH"
-  },
-  {
-    "id": "2023_questao_104",
-    "discipline": "GERAL",
-    "topic": "ENEM 2023",
-    "hint": "Ancient Soil Chemists of the Amazon Os solos amazônicos, ricos em silicato, não são apropriados para o cultivo por serem incapazes de reter nutrientes. Contudo, descobertas arqueológicas têm demonstrado que os antigos habitantes da Amazônia dominavam a técnica de preparo de um insumo agrícola natural, denominado terra preta. Esse insumo era constituído principalmente de uma espécie de biocarvão (biochar) obtido da queima de matéria orgânica, como troncos de árvores, pedaços de ossos e esterco, capaz de manter um solo fértil por anos. Admite-se que o efeito do biocarvão na fertilização do solo estava, em parte, relacionado à presença de grupos orgânicos do tipo carboxilato em sua superfície, carregados negativamente (ligação simples COO de carga negativa). Esses grupos atraem íons positivos necessários como nutrientes, tais quais os provenientes do potássio, do cálcio e do magnésio, além de micronutrientes, como zinco e ferro. Essa ligação no solo fertilizado é predominantemente iônica, conforme ilustra a figura, em que M de carga n positiva representa os cátions metálicos. De acordo com a escala de Pauling, a eletronegatividade do elemento oxigênio é igual a 3,44. O quadro apresenta os valores de eletronegatividade desses cinco elementos metálicos. | Elemento metálico | Eletronegatividade | |:---------------------|:----------------------| | K | 0,82 | | Ca | 1,00 | | Mg | 1,31 | | Zn | 1,65 | | Fe | 1,83 | O cátion que resultará em uma interação de maior caráter iônico com o ânion carboxilato será aquele proveniente do elemento",
-    "answer": "POTASSIO"
   },
   {
     "id": "2023_questao_108",
@@ -448,13 +399,6 @@
     "answer": "1 2960"
   },
   {
-    "id": "2023_questao_151",
-    "discipline": "GERAL",
-    "topic": "ENEM 2023",
-    "hint": "Os 100 funcionários de uma empresa estão distribuídos em dois setores: Produção e Administração. Os funcionários de um mesmo setor recebem salários com valores iguais. O quadro apresenta a quantidade de funcionários por setor e seus respectivos salários. | Setor | Quantidade de funcionários | Salário (em real) | |:--------------|------------------------------:|:---------------------| | Produção | 75 | 2 000,00 | | Administração | 25 | 7 000,00 | A média dos salários dos 100 funcionários dessa empresa, em real, é",
-    "answer": "3 25000"
-  },
-  {
     "id": "2023_questao_157",
     "discipline": "GERAL",
     "topic": "ENEM 2023",
@@ -481,20 +425,6 @@
     "topic": "ENEM 2023",
     "hint": "A figura ilustra uma roda-gigante no exato instante em que a cadeira onde se encontra a pessoa P está no ponto mais alto dessa roda-gigante. Com o passar do tempo, à medida que a roda-gigante gira, com velocidade angular constante e no sentido horário, a altura da cadeira onde se encontra a pessoa P, em relação ao solo, vai se alterando. O gráfico que melhor representa a variação dessa altura, em função do tempo, contado a partir do instante em que a cadeira da pessoa P se encontra na posição mais alta da roda-gigante, é [[placeholder]]",
     "answer": "PLACEHOLDER"
-  },
-  {
-    "id": "2023_questao_171",
-    "discipline": "GERAL",
-    "topic": "ENEM 2023",
-    "hint": "O gerente de uma fábrica pretende comparar a evolução das vendas de dois produtos similares (1 e 2). Para isso, passou a verificar o número de unidades vendidas de cada um desses produtos em cada mês. Os resultados dessa verificação, para os meses de abril a junho, são apresentados na tabela. | Produto | Vendas em abril (unidade) | Vendas em maio (unidade) | Vendas em junho (unidade) | |:-----------|-----------------------------:|----------------------------:|-----------------------------:| | l | 80 | 90 | 100 | | ll | 190 | 170 | 150 | O gerente estava decidido a cessar a produção do produto 2 no mês seguinte àquele em que as vendas do produto 1 superassem as do produto 2. Suponha que a variação na quantidade de unidades vendidas dos produtos 1 e 2 se manteve, mês a mês, como no período representado na tabela. Em qual mês o produto 2 parou de ser produzido?",
-    "answer": "SETEMBRO"
-  },
-  {
-    "id": "2023_questao_173",
-    "discipline": "GERAL",
-    "topic": "ENEM 2023",
-    "hint": "Uma pessoa pratica quatro atividades físicas — caminhar, correr, andar de bicicleta e jogar futebol — como parte de seu programa de emagrecimento. Essas atividades são praticadas semanalmente de acordo com o quadro, que apresenta o número de horas diárias por atividade. | Dias da semana | Caminhar | Correr | Andar de bicicleta | Jogar futebol | |:------------------|:------------|:----------|:----------------------|:-----------------| | Segunda-feira | 1,0 | 0,5 | 0,0 | 2,0 | | Terça-feira | 0,5 | 1,0 | 0,5 | 1,0 | | Quarta-feira | 0,0 | 1,5 | 1,0 | 0,5 | | Quinta-feira | 0,0 | 2,0 | 0,0 | 0,0 | | Sexta-feira | 0,0 | 0,5 | 0,0 | 2,5 | Ela deseja comemorar seu aniversário e escolhe o dia da semana em que o gasto calórico com as atividades físicas praticadas for o maior. Para tanto, considera que os valores dos gastos calóricos das atividades por hora (caloria por hora) são os seguintes: | Atividade física | Caminhar | Correr | Andar de bicicleta | Jogar futebol | |:-----------------------|------------:|----------:|----------------------:|-----------------:| | Gasto calórico (cal/h) | 248 | 764 | 356 | 492 | O dia da semana em que será comemorado o aniversário é",
-    "answer": "QUARTAFEIRA"
   },
   {
     "id": "2023_questao_178",
@@ -651,13 +581,6 @@
     "answer": "FILTRACAO"
   },
   {
-    "id": "2024_questao_136",
-    "discipline": "GERAL",
-    "topic": "ENEM 2024",
-    "hint": "Contratos de vários serviços disponíveis na internet apresentam uma quantidade excessiva de informações. Isso faz com que o tempo necessário para a leitura desses contratos possa ser longo. O quadro apresenta uma amostra do tempo considerado necessário para a leitura completa do contrato de alguns serviços digitais. | Tipo de serviço | Tempo necessário para a leitura completa do contrato (em minuto) | |:-------------------|--------------------------------------------------------------------:| | A | 36 | | B | 17 | | C | 27 | | D | 13 | | E | 13 | | F | 13 | O tempo médio, em minuto, necessário para a leitura completa de um contrato de serviço dentre os listados no quadro é, com uma casa decimal, aproximadamente,",
-    "answer": "198"
-  },
-  {
     "id": "2024_questao_140",
     "discipline": "GERAL",
     "topic": "ENEM 2024",
@@ -719,13 +642,6 @@
     "topic": "ENEM 2024",
     "hint": "Uma piscina tem capacidade de 2500000 litros. Seu sistema de abastecimento foi regulado para ter uma vazão constante de 6000 litros de água por minuto. O mesmo sistema foi instalado em uma segunda piscina, com capacidade de 2750000 litros, e regulado para ter uma vazão, também constante, capaz de enchê-la em um tempo 20 por cento maior que o gasto para encher a primeira piscina. A vazão do sistema de abastecimento da segunda piscina, em litro por minuto, é",
     "answer": "5500"
-  },
-  {
-    "id": "2024_questao_161",
-    "discipline": "GERAL",
-    "topic": "ENEM 2024",
-    "hint": "Uma empresa produz mochilas escolares sob encomenda. Essa empresa tem um custo total de produção composto por um custo fixo, que não depende do número de mochilas, mais um custo variável, que é proporcional ao número de mochilas produzidas. O custo total cresce de forma linear, e a tabela apresenta esse custo para três quantidades de mochilas produzidas. | Quantidade de mochilas | 30 | 50 | 100 | |:--------------------------|:---------|:---------|:---------| | Custo total (R$) | 1 050,00 | 1 650,00 | 3 150,00 | O custo total, em real, para a produção de 80 mochilas será",
-    "answer": "2550"
   },
   {
     "id": "2024_questao_163",
