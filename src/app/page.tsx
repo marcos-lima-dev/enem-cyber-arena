@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   Bolt, History, AlertTriangle, RefreshCcw, Search, Trash2, 
-  ArrowLeft, Brain, Dna, BookOpen, Shuffle 
+  ArrowLeft, Brain, Dna, BookOpen, Shuffle, Lock,
+  ShieldCheck, ShieldAlert, Skull
 } from "lucide-react"; 
 import { cn } from "@/lib/utils";
 import { StartScreen } from "@/components/game/StartScreen";
@@ -20,6 +21,13 @@ const MODE_INFO: Record<FilterMode, { label: string; icon: any; color: string }>
   'LIN': { label: 'LINGUAGENS', icon: BookOpen, color: 'text-yellow-400' }
 };
 
+// Configuração Visual da Dificuldade
+const DIFFICULTY_CONFIG = {
+  'EASY':   { label: 'NVL 1 • ACESSO FÁCIL', color: 'text-emerald-400 border-emerald-500/50 bg-emerald-500/10', icon: ShieldCheck },
+  'MEDIUM': { label: 'NVL 2 • SEGURANÇA MÉDIA', color: 'text-yellow-400 border-yellow-500/50 bg-yellow-500/10', icon: ShieldAlert },
+  'HARD':   { label: 'NVL 3 • SISTEMA CRÍTICO', color: 'text-destructive border-destructive/50 bg-destructive/10 animate-pulse', icon: Skull }
+};
+
 export default function GameArena() {
   const { 
     timeLeft, 
@@ -29,9 +37,11 @@ export default function GameArena() {
     currentQuestion, 
     revealedLetters, 
     keyboard,
-    filterMode, 
+    filterMode,
+    isReading, 
     startGame,
     nextLevel, 
+    startRound, 
     tickTimer, 
     submitGuess,
     useRevealPowerup, 
@@ -50,16 +60,18 @@ export default function GameArena() {
     return () => clearInterval(interval);
   }, [status, tickTimer]);
 
-  // Se estiver parado, mostra o Menu
   if (status === 'idle') {
     return <StartScreen />;
   }
 
   const isClutch = timeLeft < 10;
-  const progressValue = (timeLeft / 60) * 100;
   
   const activeMode = MODE_INFO[filterMode];
   const ModeIcon = activeMode.icon;
+
+  // Pega a info da dificuldade (ou Easy como padrão)
+  const diffInfo = DIFFICULTY_CONFIG[currentQuestion?.difficulty || 'EASY'];
+  const DiffIcon = diffInfo.icon;
 
   return (
     <main className="relative flex flex-col h-screen p-4 overflow-hidden max-w-md mx-auto">
@@ -75,9 +87,8 @@ export default function GameArena() {
       {/* HEADER TÁTICO */}
       <header className="flex flex-col gap-2 mb-4 z-10 pt-2">
         
-        {/* Linha 1: Navegação e Modo */}
+        {/* Linha 1: Navegação, Modo e Score */}
         <div className="flex items-center justify-between">
-            {/* Botão Voltar (Abortar) */}
             <Button 
                 variant="ghost" 
                 size="icon" 
@@ -87,7 +98,6 @@ export default function GameArena() {
                 <ArrowLeft className="h-6 w-6" />
             </Button>
 
-            {/* Indicador de Protocolo */}
             <div className="flex items-center gap-2 bg-gray-900/80 border border-white/10 px-3 py-1 rounded-full">
                 <ModeIcon className={cn("h-4 w-4", activeMode.color)} />
                 <span className={cn("text-[10px] font-black tracking-widest text-gray-300")}>
@@ -95,8 +105,7 @@ export default function GameArena() {
                 </span>
             </div>
             
-            {/* Score Estilizado */}
-             <div className="font-mono text-xs text-gray-400 bg-black/40 px-3 py-1 rounded border border-white/5 flex items-center gap-2">
+            <div className="font-mono text-xs text-gray-400 bg-black/40 px-3 py-1 rounded border border-white/5 flex items-center gap-2">
                 <span className="tracking-widest text-[10px]">SCORE</span>
                 <span className="text-white font-bold text-base">
                   {score.toString().padStart(4, '0')}
@@ -104,28 +113,47 @@ export default function GameArena() {
              </div>
         </div>
 
-        {/* Linha 2: Timer e Disciplina Específica */}
+        {/* Linha 2: Badges de Info e Timer */}
         <div className="flex justify-between items-end">
-            <Badge variant="outline" className="text-primary border-primary/50 bg-primary/10 px-3 py-1 text-xs md:text-sm font-bold tracking-widest w-fit">
-                <History className="mr-2 h-3 w-3" /> 
-                {currentQuestion?.discipline || "..."}
-            </Badge>
+            
+            {/* Esquerda: Badges Alinhados Horizontalmente */}
+            <div className="flex items-center gap-2 mb-1">
+              <Badge variant="outline" className="text-primary border-primary/50 bg-primary/10 px-2 py-0.5 text-[10px] md:text-xs font-bold tracking-widest w-fit whitespace-nowrap">
+                  <History className="mr-1.5 h-3 w-3" /> 
+                  {currentQuestion?.discipline || "..."}
+              </Badge>
+              
+              <Badge variant="outline" className={cn("px-2 py-0.5 text-[10px] md:text-xs font-bold tracking-widest w-fit flex items-center gap-1 whitespace-nowrap", diffInfo.color)}>
+                  <DiffIcon className="h-3 w-3" />
+                  {diffInfo.label}
+              </Badge>
+            </div>
 
+            {/* Direita: Timer e Barra de Progresso */}
             <div className="w-1/2 flex flex-col items-end gap-1">
                 <div className="flex items-center gap-2">
-                    {isClutch && <AlertTriangle className="h-4 w-4 text-destructive animate-bounce" />}
+                    {isReading ? (
+                        <Lock className="h-4 w-4 text-gray-400" />
+                    ) : (
+                        isClutch && <AlertTriangle className="h-4 w-4 text-destructive animate-bounce" />
+                    )}
+                    
                     <span className={cn(
-                    "font-mono font-bold text-xl", 
-                    isClutch ? "text-destructive text-glitch" : "text-white"
+                        "font-mono font-bold text-xl", 
+                        isReading ? "text-gray-500" : (isClutch ? "text-destructive text-glitch" : "text-white")
                     )}>
-                    {timeLeft < 10 ? `00:0${timeLeft}` : `00:${timeLeft}`}
+                        {timeLeft < 10 ? `00:0${timeLeft}` : `00:${timeLeft}`}
                     </span>
                 </div>
+                
                 {/* Barra de Progresso */}
                 <div className="w-full h-2 bg-gray-900 rounded-sm border border-gray-800 overflow-hidden">
                     <div 
-                        className={cn("h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_currentColor]", isClutch ? "bg-destructive text-destructive" : "bg-primary text-primary")}
-                        style={{ width: `${progressValue}%` }}
+                        className={cn(
+                          "h-full transition-all duration-1000 ease-linear shadow-[0_0_10px_currentColor]", 
+                          isReading ? "bg-gray-600 w-full" : (isClutch ? "bg-destructive text-destructive" : "bg-primary text-primary")
+                        )}
+                        style={{ width: isReading ? '100%' : `${(timeLeft / (currentQuestion?.pointsValue === 300 ? 90 : (currentQuestion?.pointsValue === 150 ? 60 : 45))) * 100}%` }}
                     />
                 </div>
             </div>
@@ -152,7 +180,6 @@ export default function GameArena() {
         <div className="absolute inset-0 z-50 bg-black/95 flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300 p-8 text-center">
           <h1 className="text-4xl font-black text-primary text-glitch mb-2">QUESTÃO HACKEADA!</h1>
           <p className="text-gray-400 mb-8">Score Atual: <span className="text-white font-bold">{score}</span></p>
-          
           <Button onClick={nextLevel} size="lg" className="bg-primary text-black hover:bg-primary/90 font-bold shadow-neon-lime w-full">
             PRÓXIMO NÍVEL
           </Button>
@@ -160,13 +187,28 @@ export default function GameArena() {
       )}
 
       {/* --- STAGE (Dica e Slots) --- */}
-      <div className="flex-1 flex flex-col items-center z-10 justify-center">
-        <Card className="glass-panel w-full mb-6 animate-accordion-down border-white/5">
-          <CardContent className="p-4 flex flex-col gap-1">
-             <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Contexto</span>
-             <p className="text-foreground font-medium text-base leading-snug">
-               {currentQuestion?.hint}
-             </p>
+      <div className="flex-1 flex flex-col items-center z-10 justify-center w-full">
+        
+        <Card className={cn(
+            "glass-panel w-full mb-4 border-white/5 bg-black/40 backdrop-blur-md transition-all duration-500",
+            isReading ? "border-primary/50 shadow-neon-lime" : ""
+        )}>
+          <CardContent className="p-4">
+             <div className="flex justify-between items-center mb-2">
+                <span className={cn(
+                    "text-[10px] uppercase font-bold tracking-widest transition-colors",
+                    isReading ? "text-primary animate-pulse" : "text-muted-foreground"
+                )}>
+                  {isReading ? ">> ANALISANDO DADOS..." : "Contexto da Questão"}
+                </span>
+                <div className="h-1 w-8 bg-white/10 rounded-full" />
+             </div>
+             
+             <div className="h-[120px] overflow-y-auto pr-2 custom-scrollbar">
+               <p className="text-foreground font-medium text-sm md:text-base leading-relaxed text-justify">
+                 {currentQuestion?.hint}
+               </p>
+             </div>
           </CardContent>
         </Card>
 
@@ -182,7 +224,7 @@ export default function GameArena() {
                )}
              >
                {char}
-               {char === '' && revealedLetters.findIndex(l => l === '') === index && (
+               {char === '' && revealedLetters.findIndex(l => l === '') === index && !isReading && (
                  <span className="w-4 h-1 bg-primary/50 animate-pulse absolute bottom-3"/>
                )}
              </div>
@@ -191,12 +233,26 @@ export default function GameArena() {
       </div>
 
       {/* --- KEYPAD & POWERUPS --- */}
-      <div className="z-10 mt-auto flex flex-col gap-3 pb-2">
-        <div className="grid grid-cols-5 gap-1.5 justify-items-center">
+      <div className="z-10 mt-auto flex flex-col gap-3 pb-2 relative">
+        
+        {isReading && (
+            <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-[2px] rounded-xl flex items-center justify-center animate-in fade-in zoom-in duration-300">
+                <Button 
+                    onClick={startRound}
+                    size="xl"
+                    className="font-black text-lg tracking-widest shadow-neon-lime animate-pulse-fast bg-primary text-black hover:bg-white hover:scale-105 transition-all skew-x-[-6deg]"
+                >
+                    <Bolt className="mr-2 h-6 w-6 animate-spin-slow" />
+                    INICIAR HACK
+                </Button>
+            </div>
+        )}
+
+        <div className={cn("grid grid-cols-5 gap-1.5 justify-items-center transition-all duration-500", isReading && "opacity-20 blur-sm")}>
            {keyboard.map((keyObj, idx) => (
              <button
                key={`${keyObj.char}-${idx}`}
-               disabled={keyObj.status !== 'idle' || status !== 'playing'}
+               disabled={keyObj.status !== 'idle' || status !== 'playing' || isReading}
                onClick={() => submitGuess(keyObj.char)}
                className={cn(
                  "w-full aspect-square rounded-xl font-bold text-xl transition-all duration-100 flex items-center justify-center border-b-4 relative overflow-hidden",
@@ -212,20 +268,21 @@ export default function GameArena() {
            ))}
         </div>
 
-        <div className="flex gap-2 h-14">
+        <div className={cn("flex gap-2 h-14 transition-all duration-500", isReading && "opacity-20 blur-sm")}>
             <Button 
                 variant="outline" 
                 className="h-full w-16 border-gray-700 bg-gray-800/50 flex flex-col gap-0 p-0 hover:bg-gray-700 hover:text-white"
                 onClick={useTrashPowerup}
-                disabled={powerups.trash === 0 || status !== 'playing'}
+                disabled={powerups.trash === 0 || status !== 'playing' || isReading}
             >
                 <Trash2 className={cn("h-5 w-5", powerups.trash > 0 ? "text-destructive" : "text-gray-600")} />
                 <span className="text-[10px] font-bold">{powerups.trash}</span>
             </Button>
 
             <Button 
-                className="flex-1 h-full text-lg font-black italic tracking-widest uppercase shadow-neon-lime animate-pulse-fast bg-primary text-black hover:bg-primary/90"
+                className="flex-1 h-full text-lg font-black italic tracking-widest uppercase shadow-neon-lime animate-pulse-fast bg-primary text-black hover:bg-primary/90 disabled:opacity-50"
                 onClick={() => {}} 
+                disabled={isReading}
             >
                 <Bolt className="mr-2 h-5 w-5" /> RESPONDER
             </Button>
@@ -234,7 +291,7 @@ export default function GameArena() {
                 variant="outline" 
                 className="h-full w-16 border-gray-700 bg-gray-800/50 flex flex-col gap-0 p-0 hover:bg-gray-700 hover:text-white"
                 onClick={useRevealPowerup}
-                disabled={powerups.reveal === 0 || status !== 'playing'}
+                disabled={powerups.reveal === 0 || status !== 'playing' || isReading}
             >
                 <Search className={cn("h-5 w-5", powerups.reveal > 0 ? "text-primary" : "text-gray-600")} />
                 <span className="text-[10px] font-bold">{powerups.reveal}</span>
