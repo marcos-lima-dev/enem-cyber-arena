@@ -1,11 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 
-// --- CONFIGURAÇÕES DO GARIMPO ---
-const MAX_CHARS = 18; // Máximo de letras (senão quebra a tela do celular)
-const MAX_WORDS = 2;  // Máximo de palavras (ex: "GUERRA FRIA" ok, frase longa não)
+// --- CONFIGURAÇÕES ---
+const MAX_CHARS = 18; 
+const MAX_WORDS = 2;
+const MIN_CHARS = 3;
 
-// Mapeamento para siglas bonitas no jogo
 const TAG_MAP = {
   'matematica': 'MAT',
   'portugues': 'LIN',
@@ -18,97 +18,97 @@ const TAG_MAP = {
   'espanhol': 'ESP',
   'filosofia': 'FILO',
   'sociologia': 'SOC',
-  'geral': 'GERAL' // Fallback
+  'geral': 'GERAL'
 };
 
-// Função de Limpeza (Remove acentos, pontos finais e deixa uppercase)
-const cleanText = (str) => {
+const cleanAnswerText = (str) => {
   if (!str) return "";
   return str
-    .replace(/\.$/, "") // Remove ponto final se tiver
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove acentos
-    .replace(/[^a-zA-Z0-9 ]/g, "") // Remove tudo que não for letra/número ou espaço
+    .replace(/\.$/, "")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9 ]/g, "")
     .toUpperCase()
     .trim();
 };
 
 try {
-  console.log("⚡ Iniciando refinaria 2.0 (Compatible Mode)...");
+  console.log("⚡ Iniciando refinaria 4.0 (Anti-Table Mode)...");
 
-  const rawPath = path.join(__dirname, '../questoes_raw.json');
-  if (!fs.existsSync(rawPath)) {
-    throw new Error("Arquivo 'questoes_raw.json' não encontrado!");
-  }
+  const rawPath = path.join(__dirname, '../questoes_raw.json'); 
+  if (!fs.existsSync(rawPath)) throw new Error(`Arquivo não encontrado: ${rawPath}`);
   
   const rawData = JSON.parse(fs.readFileSync(rawPath, 'utf-8'));
   console.log(`📊 Analisando ${rawData.length} questões...`);
 
-  let skippedCount = 0;
+  let skippedStats = {
+      longText: 0,
+      badTable: 0, // 👈 Nova estatística
+      noAnswer: 0
+  };
 
   const processedQuestions = rawData.map((q, index) => {
-      // 1. Validação Básica
       if (!q.respostaCorreta || !q.alternativas) {
-        skippedCount++;
+        skippedStats.noAnswer++;
         return null;
       }
 
-      // 2. Achar o TEXTO da resposta correta (Match Letter "B" -> Text "...")
       const correctAlt = q.alternativas.find(alt => alt.letra === q.respostaCorreta);
-      
       if (!correctAlt || !correctAlt.texto) {
-        skippedCount++;
+        skippedStats.noAnswer++;
         return null;
       }
 
-      // 3. Limpeza
-      const cleanAnswer = cleanText(correctAlt.texto);
+      const cleanAnswer = cleanAnswerText(correctAlt.texto);
       
-      // 4. FILTRO RIGOROSO (Só aceita palavras curtas para o jogo)
+      // Filtro de Tamanho da Resposta
       const wordCount = cleanAnswer.split(' ').length;
-      
-      if (wordCount > MAX_WORDS || cleanAnswer.length > MAX_CHARS || cleanAnswer.length < 3) {
-        // Pula frases longas (Ex: "revolta com a falta de sorte")
-        skippedCount++; 
+      if (wordCount > MAX_WORDS || cleanAnswer.length > MAX_CHARS || cleanAnswer.length < MIN_CHARS) {
+        skippedStats.longText++; 
         return null;
       }
 
-      // 5. Preparar Metadados
-      // Tenta mapear a matéria, se falhar usa as 3 primeiras letras maiúsculas
+      // TRATAMENTO DO ENUNCIADO
+      let hintText = q.enunciado || "Contexto indisponível.";
+      
+      // 👇 O "TERMINATOR" DE TABELAS
+      // Se o texto tiver "|", é uma tabela Markdown. Lixo.
+      if (hintText.includes('|') || hintText.includes('---')) {
+          skippedStats.badTable++;
+          return null;
+      }
+
+      // Limpeza padrão
+      hintText = hintText
+          .replace(/##/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+
       let rawMateria = q.materia ? q.materia.toLowerCase() : 'geral';
       let disciplineTag = TAG_MAP[rawMateria] || rawMateria.substring(0, 4).toUpperCase();
-
-      // Enunciado como Dica (Truncado se necessário)
-      let hintText = q.enunciado || "Sem enunciado disponível.";
-      if (hintText.length > 140) {
-        hintText = hintText.substring(0, 137) + "...";
-      }
 
       return {
         id: q.id || `gen-${index}`,
         discipline: disciplineTag,
-        topic: q.ano ? `ENEM ${q.ano}` : "Geral", // Tenta usar o Ano como subtópico
+        topic: q.ano ? `ENEM ${q.ano}` : "Geral",
         hint: hintText,
-        answer: cleanAnswer
+        answer: cleanAnswer,
+        // Mantendo compatibilidade com o sistema de dificuldade
+        // (A dificuldade será recalculada na Store na hora do jogo, 
+        // mas podemos salvar campos vazios se quiser)
       };
     })
-    .filter(item => item !== null); // Remove os nulos (que foram filtrados)
+    .filter(item => item !== null);
 
   // Salvar
   const outputPath = path.join(__dirname, '../src/data/questions.json');
   fs.writeFileSync(outputPath, JSON.stringify(processedQuestions, null, 2));
 
   console.log("---------------------------------------------------");
-  console.log(`❌ Ignoradas (Frases longas/Inválidas): ${skippedCount}`);
+  console.log(`❌ Removidas por Resposta Longa/Inválida: ${skippedStats.longText}`);
+  console.log(`❌ Removidas por Conter Tabelas (Markdown): ${skippedStats.badTable}`); // 👈 Veja quantas morrem aqui
+  console.log(`❌ Dados incompletos: ${skippedStats.noAnswer}`);
   console.log(`✅ APROVADAS PARA O JOGO: ${processedQuestions.length}`);
   console.log("---------------------------------------------------");
-
-  if (processedQuestions.length > 0) {
-    console.log("🔍 Exemplo de questão gerada:");
-    console.log(processedQuestions[0]);
-  } else {
-    console.log("⚠️ AVISO: Nenhuma questão passou no filtro de tamanho.");
-    console.log("DICA: Tente aumentar 'MAX_WORDS' no script ou use uma base com respostas mais curtas.");
-  }
 
 } catch (error) {
   console.error("Erro fatal:", error.message);

@@ -19,6 +19,8 @@ export type Question = {
   topic: string;
   hint: string;
   answer: string;
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD'; // 👈 Novo Campo
+  pointsValue: number; // 👈 Quanto vale essa questão
 };
 
 export type HighScore = {
@@ -34,6 +36,7 @@ type GameState = {
   streak: number;
   status: GameStatus;
   filterMode: FilterMode;
+  isReading: boolean;
   
   powerups: {
     reveal: number;
@@ -49,7 +52,8 @@ type GameState = {
 
 type GameActions = {
   startGame: () => void;
-  nextLevel: () => void; // 👈 Ação para passar de fase sem zerar pontos
+  nextLevel: () => void;
+  startRound: () => void;
   setFilterMode: (mode: FilterMode) => void;
   tickTimer: () => void;
   submitGuess: (letter: string) => void;
@@ -58,11 +62,26 @@ type GameActions = {
   resetGame: () => void;
 };
 
-// --- MAPA DE CATEGORIAS ---
 const CATEGORY_MAP: Record<string, string[]> = {
   'HUM': ['HIST', 'GEO', 'FILO', 'SOC'],
   'NAT': ['MAT', 'FIS', 'QUIM', 'BIO'],
   'LIN': ['LIN', 'LIT', 'ING', 'ESP', 'ART', 'EDF']
+};
+
+// 🧠 FUNÇÃO AUXILIAR: CALCULA A DIFICULDADE
+const calculateDifficulty = (q: typeof questionsData[0]) => {
+  const textLen = q.hint.length;
+  const ansLen = q.answer.length;
+  
+  // Lógica: Texto muito longo OU palavra muito difícil
+  if (textLen > 300 || ansLen > 10) {
+      return { level: 'HARD', time: 90, points: 300 };
+  }
+  if (textLen > 150 || ansLen > 6) {
+      return { level: 'MEDIUM', time: 60, points: 150 };
+  }
+  // Se for curtinho
+  return { level: 'EASY', time: 45, points: 100 };
 };
 
 export const useGameStore = create<GameState & GameActions>()(
@@ -74,6 +93,7 @@ export const useGameStore = create<GameState & GameActions>()(
         streak: 0,
         status: 'idle',
         filterMode: 'MIX',
+        isReading: false,
         powerups: { reveal: 3, trash: 3 },
         highScores: [],
         currentQuestion: null,
@@ -84,12 +104,15 @@ export const useGameStore = create<GameState & GameActions>()(
           set((state) => { state.filterMode = mode; });
         },
 
-        // INICIAR DO ZERO (Reseta Score, Vidas e Powerups)
+        startRound: () => {
+          set((state) => { state.isReading = false; });
+        },
+
         startGame: () => {
           set((state) => {
             state.status = 'playing';
+            state.isReading = true;
             state.score = 0;
-            state.timeLeft = 60;
             state.streak = 0;
             state.powerups = { reveal: 3, trash: 3 };
             
@@ -101,14 +124,21 @@ export const useGameStore = create<GameState & GameActions>()(
               if (filtered.length > 0) pool = filtered;
             }
             const randomIndex = Math.floor(Math.random() * pool.length);
-            const selectedQuestion = pool[randomIndex];
+            const selectedRaw = pool[randomIndex];
+
+            // 👇 CÁLCULO DINÂMICO DE DIFICULDADE
+            const diff = calculateDifficulty(selectedRaw);
+
+            state.timeLeft = diff.time; // Tempo varia conforme a questão!
 
             const newQuestion: Question = {
-              id: selectedQuestion.id,
-              discipline: selectedQuestion.discipline,
-              topic: selectedQuestion.topic,
-              hint: selectedQuestion.hint,
-              answer: selectedQuestion.answer.toUpperCase()
+              id: selectedRaw.id,
+              discipline: selectedRaw.discipline,
+              topic: selectedRaw.topic,
+              hint: selectedRaw.hint,
+              answer: selectedRaw.answer.toUpperCase(),
+              difficulty: diff.level as any, // EASY, MEDIUM, HARD
+              pointsValue: diff.points
             };
 
             state.currentQuestion = newQuestion;
@@ -123,15 +153,12 @@ export const useGameStore = create<GameState & GameActions>()(
           });
         },
 
-        // PRÓXIMO NÍVEL (Mantém Score e Streak) 👈
         nextLevel: () => {
           set((state) => {
             state.status = 'playing';
-            state.timeLeft = 60; // Renova o tempo
+            state.isReading = true;
             
-            // Nota: NÃO resetamos score, streak ou powerups aqui!
-
-            // Sorteio de nova questão
+            // Sorteio
             let pool = questionsData;
             if (state.filterMode !== 'MIX') {
               const allowedTags = CATEGORY_MAP[state.filterMode];
@@ -139,20 +166,25 @@ export const useGameStore = create<GameState & GameActions>()(
               if (filtered.length > 0) pool = filtered;
             }
             const randomIndex = Math.floor(Math.random() * pool.length);
-            const selectedQuestion = pool[randomIndex];
+            const selectedRaw = pool[randomIndex];
+
+            // 👇 CÁLCULO DINÂMICO DE DIFICULDADE
+            const diff = calculateDifficulty(selectedRaw);
+            state.timeLeft = diff.time; // Reseta o tempo baseado na nova dificuldade
 
             const newQuestion: Question = {
-              id: selectedQuestion.id,
-              discipline: selectedQuestion.discipline,
-              topic: selectedQuestion.topic,
-              hint: selectedQuestion.hint,
-              answer: selectedQuestion.answer.toUpperCase()
+              id: selectedRaw.id,
+              discipline: selectedRaw.discipline,
+              topic: selectedRaw.topic,
+              hint: selectedRaw.hint,
+              answer: selectedRaw.answer.toUpperCase(),
+              difficulty: diff.level as any,
+              pointsValue: diff.points
             };
 
             state.currentQuestion = newQuestion;
             state.revealedLetters = Array(newQuestion.answer.length).fill('');
 
-            // Novo Teclado
             const answerChars = newQuestion.answer.split('');
             const distractors = ['X', 'A', 'B', 'Z', 'M', 'R', 'S', 'T', 'L', 'C', 'V', 'P', 'E', 'O'];
             const uniquePool = Array.from(new Set([...answerChars, ...distractors])).slice(0, 15);
@@ -164,14 +196,13 @@ export const useGameStore = create<GameState & GameActions>()(
         tickTimer: () => {
           set((state) => {
             if (state.status !== 'playing') return;
+            if (state.isReading) return;
             
             if (state.timeLeft > 0) {
               state.timeLeft -= 1;
             } else {
-              // GAME OVER POR TEMPO
               state.status = 'gameover';
               playSFX('gameover');
-              
               if (state.score > 0) {
                   const newEntry: HighScore = {
                       id: crypto.randomUUID(),
@@ -187,9 +218,12 @@ export const useGameStore = create<GameState & GameActions>()(
           });
         },
 
+        // ... Powerups iguais ... 
         useRevealPowerup: () => {
            set((state) => {
               if (state.status !== 'playing' || state.powerups.reveal <= 0 || !state.currentQuestion) return;
+              if (state.isReading) return;
+
               const emptyIndices = state.revealedLetters.map((c, i) => c === '' ? i : -1).filter(i => i !== -1);
               if (emptyIndices.length === 0) return;
               
@@ -213,6 +247,8 @@ export const useGameStore = create<GameState & GameActions>()(
         useTrashPowerup: () => {
           set((state) => {
               if (state.status !== 'playing' || state.powerups.trash <= 0 || !state.currentQuestion) return;
+              if (state.isReading) return;
+
               const ans = state.currentQuestion.answer;
               const trashable = state.keyboard.filter(k => !ans.includes(k.char) && k.status === 'idle');
               if (trashable.length === 0) return;
@@ -230,38 +266,42 @@ export const useGameStore = create<GameState & GameActions>()(
         submitGuess: (letter) => {
           set((state) => {
               if (state.status !== 'playing' || !state.currentQuestion) return;
+              if (state.isReading) return;
+
               const ans = state.currentQuestion.answer;
               const kIdx = state.keyboard.findIndex(k => k.char === letter);
               if (kIdx !== -1 && state.keyboard[kIdx].status === 'disabled') return;
 
               if (ans.includes(letter)) {
-                  // ACERTO
                   if (kIdx !== -1) state.keyboard[kIdx].status = 'correct';
                   ans.split('').forEach((c, i) => { if (c === letter) state.revealedLetters[i] = letter; });
                   
-                  state.score += 10 + (state.streak * 5);
+                  // 👇 AQUI MUDOU: Usa os pontos da questão em vez de fixo 10
+                  const basePoints = state.currentQuestion.pointsValue || 100;
+                  // Ganha 10% do valor da questão por letra, + bonus de streak
+                  const pointsPerLetter = Math.ceil(basePoints / ans.length) + (state.streak * 2);
+                  
+                  state.score += pointsPerLetter;
                   state.streak += 1;
-                  state.timeLeft += 2;
+                  state.timeLeft += 2; // Tempo extra por acerto
                   
                   playSFX('hit');
 
                   if (!state.revealedLetters.includes('')) {
                       state.status = 'victory';
                       playSFX('win');
+                      // Bonus de vitória limpa: O que sobrou do tempo vira pontos!
+                      state.score += state.timeLeft * 2; 
                   }
               } else {
-                  // ERRO
                   if (kIdx !== -1) state.keyboard[kIdx].status = 'wrong';
                   state.streak = 0;
                   state.timeLeft -= 5;
                   
-                  // Verifica se morreu por erro (tempo zerou com a penalidade)
                   if (state.timeLeft <= 0) {
                       state.timeLeft = 0;
                       state.status = 'gameover';
                       playSFX('gameover');
-
-                      // Salva score se morreu aqui também
                       if (state.score > 0) {
                         const newEntry: HighScore = {
                             id: crypto.randomUUID(),
@@ -285,6 +325,7 @@ export const useGameStore = create<GameState & GameActions>()(
             state.status = 'idle';
             state.score = 0;
             state.timeLeft = 60;
+            state.isReading = false;
           });
         }
       })),

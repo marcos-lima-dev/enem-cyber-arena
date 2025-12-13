@@ -85,7 +85,7 @@ export default function GameArena() {
       />
 
       {/* HEADER TÁTICO */}
-      <header className="flex flex-col gap-2 mb-4 z-10 pt-2">
+      <header className="flex flex-col gap-2 mb-4 z-10 pt-2 shrink-0">
         
         {/* Linha 1: Navegação, Modo e Score */}
         <div className="flex items-center justify-between">
@@ -187,14 +187,17 @@ export default function GameArena() {
       )}
 
       {/* --- STAGE (Dica e Slots) --- */}
-      <div className="flex-1 flex flex-col items-center z-10 justify-center w-full">
+      {/* 👇 min-h-0 é crucial para o flexbox permitir scroll interno */}
+      <div className="flex-1 flex flex-col items-center z-10 justify-center w-full min-h-0">
         
+        {/* 👇 Card flexível que pode encolher (shrink) */}
         <Card className={cn(
-            "glass-panel w-full mb-4 border-white/5 bg-black/40 backdrop-blur-md transition-all duration-500",
+            "glass-panel w-full mb-4 border-white/5 bg-black/40 backdrop-blur-md transition-all duration-500 flex flex-col shrink",
             isReading ? "border-primary/50 shadow-neon-lime" : ""
         )}>
-          <CardContent className="p-4">
-             <div className="flex justify-between items-center mb-2">
+          <CardContent className="p-4 flex flex-col max-h-full">
+             {/* Header do Card fixo (shrink-0) */}
+             <div className="flex justify-between items-center mb-2 shrink-0">
                 <span className={cn(
                     "text-[10px] uppercase font-bold tracking-widest transition-colors",
                     isReading ? "text-primary animate-pulse" : "text-muted-foreground"
@@ -204,7 +207,8 @@ export default function GameArena() {
                 <div className="h-1 w-8 bg-white/10 rounded-full" />
              </div>
              
-             <div className="h-[120px] overflow-y-auto pr-2 custom-scrollbar">
+             {/* 👇 Altura Dinâmica: Máximo de 25% da tela. Se passar disso, scroll! */}
+             <div className="overflow-y-auto pr-2 custom-scrollbar max-h-[25vh] md:max-h-[200px]">
                <p className="text-foreground font-medium text-sm md:text-base leading-relaxed text-justify">
                  {currentQuestion?.hint}
                </p>
@@ -212,7 +216,8 @@ export default function GameArena() {
           </CardContent>
         </Card>
 
-        <div className="flex flex-wrap justify-center gap-2 mb-4">
+        {/* Slots das Letras */}
+        <div className="flex flex-wrap justify-center gap-2 mb-4 shrink-0">
            {revealedLetters.map((char, index) => (
              <div 
                key={index}
@@ -233,7 +238,7 @@ export default function GameArena() {
       </div>
 
       {/* --- KEYPAD & POWERUPS --- */}
-      <div className="z-10 mt-auto flex flex-col gap-3 pb-2 relative">
+      <div className="z-10 mt-auto flex flex-col gap-3 pb-2 relative shrink-0">
         
         {isReading && (
             <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-[2px] rounded-xl flex items-center justify-center animate-in fade-in zoom-in duration-300">
